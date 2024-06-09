@@ -9,6 +9,8 @@ import (
 	"errors"
 	"io"
 	"sync"
+
+	"github.com/rs/zerolog/log"
 )
 
 // A Compressor returns a new compressing writer, writing to w.
@@ -46,7 +48,7 @@ func (w *pooledFlateWriter) Write(p []byte) (n int, err error) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.fw == nil {
-		return 0, errors.New("Write after Close")
+		return 0, errors.New("write after Close")
 	}
 	return w.fw.Write(p)
 }
@@ -68,7 +70,10 @@ var flateReaderPool sync.Pool
 func newFlateReader(r io.Reader) io.ReadCloser {
 	fr, ok := flateReaderPool.Get().(io.ReadCloser)
 	if ok {
-		fr.(flate.Resetter).Reset(r, nil)
+		err := fr.(flate.Resetter).Reset(r, nil)
+		if err != nil {
+			log.Fatal().Err(err).Msg("Error resetting reader")
+		}
 	} else {
 		fr = flate.NewReader(r)
 	}
@@ -84,7 +89,7 @@ func (r *pooledFlateReader) Read(p []byte) (n int, err error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if r.fr == nil {
-		return 0, errors.New("Read after Close")
+		return 0, errors.New("read after Close")
 	}
 	return r.fr.Read(p)
 }

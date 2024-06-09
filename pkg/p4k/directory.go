@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"github.com/samber/lo"
+	"starcitizen-streamdeck/internal/util"
 	"starcitizen-streamdeck/pkg/zip"
 )
 
@@ -88,7 +89,7 @@ func (d *Directory) ScanDirectoryFor(p4kFilename, filename string) (*File, error
 	if err != nil {
 		return nil, errors.Wrap(err, "Open Reader")
 	}
-	defer reader.Close()
+	defer util.DiscardErrorOnly(reader.Close())
 
 	if err := d.getRecords(reader); err != nil {
 		return nil, errors.Wrap(err, "Get Records")
@@ -115,7 +116,7 @@ func (d *Directory) ScanDirectoryContaining(p4kFilename, filenamePart string) ([
 	if err != nil {
 		return nil, errors.Wrap(err, "Open Reader")
 	}
-	defer reader.Close()
+	defer util.DiscardErrorOnly(reader.Close())
 	var fileList []*File
 	if err := d.getRecords(reader); err != nil {
 		return nil, errors.Wrap(err, "Get Records")

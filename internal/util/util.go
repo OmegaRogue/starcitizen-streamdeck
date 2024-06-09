@@ -8,6 +8,12 @@ import (
 	"github.com/samber/lo"
 )
 
+func DiscardErrorOnly(err error) {
+	if err != nil {
+		log.Fatal().Err(err).Send()
+	}
+}
+
 func DiscardError[T any](first T, err error) T {
 	if err != nil {
 		log.Fatal().Err(err).Send()

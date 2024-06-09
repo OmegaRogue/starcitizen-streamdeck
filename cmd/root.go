@@ -78,7 +78,7 @@ func NewRootCmd() *cobra.Command {
 			if err != nil {
 				log.Fatal().Err(err).Msg("failed to create watcher")
 			}
-			defer watcher.Close()
+			defer util.DiscardErrorOnly(watcher.Close())
 
 			go func() {
 				for {
@@ -209,15 +209,21 @@ func RegenerateTemplates() {
 	templ.DefinedTemplates()
 	templ.Templates()
 	static, _ := os.OpenFile("PropertyInspector/StarCitizen/Static.html", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
-	templ.ExecuteTemplate(static, "static.gohtml", data.Profile)
-	defer static.Sync()
-	defer static.Close()
+	if err := templ.ExecuteTemplate(static, "static.gohtml", data.Profile); err != nil {
+		log.Fatal().Err(err).Msg("static template failed to execute")
+	}
+	defer util.DiscardErrorOnly(static.Sync())
+	defer util.DiscardErrorOnly(static.Close())
 	macro, _ := os.OpenFile("PropertyInspector/StarCitizen/Macro.html", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
-	templ.ExecuteTemplate(macro, "macro.gohtml", data.Profile)
-	defer macro.Sync()
-	defer macro.Close()
+	if err := templ.ExecuteTemplate(macro, "macro.gohtml", data.Profile); err != nil {
+		log.Fatal().Err(err).Msg("macro template failed to execute")
+	}
+	defer util.DiscardErrorOnly(macro.Sync())
+	defer util.DiscardErrorOnly(macro.Close())
 	dial, _ := os.OpenFile("PropertyInspector/StarCitizen/Dial.html", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
-	templ.ExecuteTemplate(dial, "dial.gohtml", data.Profile)
-	defer dial.Sync()
-	defer dial.Close()
+	if err := templ.ExecuteTemplate(dial, "dial.gohtml", data.Profile); err != nil {
+		log.Fatal().Err(err).Msg("dial template failed to execute")
+	}
+	defer util.DiscardErrorOnly(dial.Sync())
+	defer util.DiscardErrorOnly(dial.Close())
 }

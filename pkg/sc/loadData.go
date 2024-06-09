@@ -10,16 +10,19 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/samber/lo"
+	"starcitizen-streamdeck/internal/util"
 	cryxml2 "starcitizen-streamdeck/pkg/cryxml"
 	"starcitizen-streamdeck/pkg/p4k"
 )
 
 func LoadData(prefix string, version Version) Data {
 	defaultProfile, _ := os.OpenFile("defaultProfile.xml", os.O_RDWR|os.O_CREATE, 0666)
-	defer defaultProfile.Close()
+	defer util.DiscardErrorOnly(defaultProfile.Sync())
+	defer util.DiscardErrorOnly(defaultProfile.Close())
 
 	global, _ := os.OpenFile("global.json", os.O_RDWR|os.O_CREATE, 0666)
-	defer global.Close()
+	defer util.DiscardErrorOnly(global.Sync())
+	defer util.DiscardErrorOnly(global.Close())
 
 	p4kPath := P4K(prefix, version)
 
@@ -43,8 +46,10 @@ func LoadData(prefix string, version Version) Data {
 		tree := new(cryxml2.Tree)
 		tree.BuildXml(root)
 		cryXMLData = fmt.Sprint(tree)
-		io.WriteString(defaultProfile, cryXMLData)
-		defaultProfile.Sync()
+
+		if _, err := io.WriteString(defaultProfile, cryXMLData); err != nil {
+			log.Fatal().Err(err).Msg("error writing defaultProfile")
+		}
 	} else {
 		data, _ := io.ReadAll(defaultProfile)
 		cryXMLData = string(data)
@@ -69,11 +74,14 @@ func LoadData(prefix string, version Version) Data {
 			})
 		}
 		out, _ := json.Marshal(locals)
-		global.Write(out)
-		global.Sync()
+		if _, err := global.Write(out); err != nil {
+			log.Fatal().Err(err).Msg("error writing globalization")
+		}
 	} else {
 		data, _ := io.ReadAll(global)
-		json.Unmarshal(data, &locals)
+		if err := json.Unmarshal(data, &locals); err != nil {
+			log.Fatal().Err(err).Msg("error unmarshalling globalization")
+		}
 	}
 
 	//log.Info().Err(err).Str("filename", file.Filename).Msg("\n" + retVal)
@@ -91,7 +99,9 @@ func LoadActionmap(prefix string, version Version) *ActionMapActionMaps {
 	//fmt.Println(string(data))
 
 	var out ActionMapActionMaps
-	xml.Unmarshal(data, &out)
+	if err := xml.Unmarshal(data, &out); err != nil {
+		log.Fatal().Err(err).Msg("error unmarshalling ActionMaps")
+	}
 	out.Prepare()
 	return &out
 }
