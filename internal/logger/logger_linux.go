@@ -23,7 +23,6 @@ import (
 	stdlog "log"
 	"os"
 
-	"github.com/OmegaRogue/weylus-desktop/logger/journald"
 	"github.com/kr/pretty"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
@@ -32,12 +31,9 @@ import (
 )
 
 func SetupLogger() {
-	var multi zerolog.LevelWriter
-	journaldWriter := journald.NewBetterJournaldWriter()
 
 	consoleWriter := zerolog.ConsoleWriter{
-		Out:           os.Stdout,
-		FieldsExclude: []string{journald.ThreadFieldName},
+		Out: os.Stdout,
 		PartsOrder: []string{
 			zerolog.TimestampFieldName,
 			zerolog.LevelFieldName,
@@ -45,8 +41,7 @@ func SetupLogger() {
 			zerolog.MessageFieldName,
 		},
 	}
-	multi = zerolog.MultiLevelWriter(consoleWriter, journaldWriter)
-	log.Logger = log.Output(multi).With().Caller().Stack().Logger().Hook(journald.ThreadHook{})
+	log.Logger = log.Output(consoleWriter).With().Caller().Stack().Logger()
 	stdLogger := log.With().Str("component", "stdlog").Logger()
 	stdlog.SetOutput(stdLogger)
 
