@@ -57,7 +57,7 @@
   "Icon": "Images/pluginIcon",
   "URL": "https://github.com/mhwlng/streamdeck-starcitizen",
   "Version": "{{version}}",
-  "CodePathLin": "codes.omegavoid.starcitizen",
+  "CodePathLin": "starcitizen-streamdeck",
   "Category": "Star Citizen",
   "CategoryIcon": "Images/categoryIcon",
   "OS": [
