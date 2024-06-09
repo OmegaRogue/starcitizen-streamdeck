@@ -41,26 +41,6 @@ var (
 
 var data sc.Data
 
-var funcMap = template.FuncMap{
-	"localize": func(value string) string {
-		loc, ok := data.Locale["english"][strings.Trim(strings.TrimSpace(value), "@")]
-		if !ok {
-			return value
-		}
-		return loc
-	},
-	"getBind": data.LookupBind,
-	"empty": func(value string) bool {
-		return strings.TrimSpace(value) == ""
-	},
-	"notEmpty": func(value string) bool {
-		return strings.TrimSpace(value) != ""
-	},
-	"localizeKey": func(value string) string {
-		return util.LocalizeKeyString(value, "de")
-	},
-}
-
 //goland:noinspection GoUnusedExportedFunction
 func GetRootCmd() *cobra.Command {
 	return rootCmd
@@ -197,6 +177,25 @@ func registerAction(id string, callback, callbackUp sdk.ActionHandler[sdk.KeyPay
 }
 
 func RegenerateTemplates() {
+	funcMap := template.FuncMap{
+		"localize": func(value string) string {
+			loc, ok := data.Locale["english"][strings.Trim(strings.TrimSpace(value), "@")]
+			if !ok {
+				return value
+			}
+			return loc
+		},
+		"getBind": data.LookupBind,
+		"empty": func(value string) bool {
+			return strings.TrimSpace(value) == ""
+		},
+		"notEmpty": func(value string) bool {
+			return strings.TrimSpace(value) != ""
+		},
+		"localizeKey": func(value string) string {
+			return util.LocalizeKeyString(value, "de")
+		},
+	}
 	templ, err := template.New("master").Funcs(funcMap).ParseGlob("*.gohtml")
 	if err != nil {
 		log.Err(err).Msg("parsing template")
