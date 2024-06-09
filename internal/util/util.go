@@ -2,7 +2,6 @@ package util
 
 import (
 	"strings"
-	"sync"
 
 	"github.com/rs/zerolog/log"
 	"github.com/samber/lo"
@@ -14,32 +13,12 @@ func DiscardErrorOnly(err error) {
 	}
 }
 
+//goland:noinspection GoUnusedExportedFunction
 func DiscardError[T any](first T, err error) T {
 	if err != nil {
 		log.Fatal().Err(err).Send()
 	}
 	return first
-}
-
-// ParallelMapValues manipulates a map and transforms it to a map of another type.
-// `iteratee` is call in parallel. Result keep the same order.
-func ParallelMapValues[K comparable, V any, R any](in map[K]V, iteratee func(value V, key K) R) map[K]R {
-	result := make(map[K]R, len(in))
-
-	var wg sync.WaitGroup
-	wg.Add(len(in))
-
-	for k, v := range in {
-		go func(_value V, _key K) {
-			res := iteratee(_value, _key)
-			result[_key] = res
-			wg.Done()
-		}(v, k)
-	}
-
-	wg.Wait()
-
-	return result
 }
 
 var KeyLoc = map[string]map[string]string{

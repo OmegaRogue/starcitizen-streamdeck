@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GoLinterSettings">
+    <option name="enabledLinters">
+      <list>
+        <option value="decorder" />
+        <option value="exportloopref" />
+        <option value="funlen" />
+        <option value="gocritic" />
+        <option value="musttag" />
+        <option value="goconst" />
+        <option value="errcheck" />
+        <option value="gocognit" />
+        <option value="nilnil" />
+        <option value="ineffassign" />
+        <option value="grouper" />
+        <option value="goheader" />
+        <option value="nilerr" />
+        <option value="revive" />
+        <option value="prealloc" />
+        <option value="durationcheck" />
+        <option value="staticcheck" />
+        <option value="dupl" />
+        <option value="govet" />
+        <option value="errorlint" />
+        <option value="wrapcheck" />
+        <option value="wastedassign" />
+        <option value="bodyclose" />
+        <option value="gosec" />
+        <option value="unconvert" />
+        <option value="unused" />
+        <option value="stylecheck" />
+        <option value="contextcheck" />
+        <option value="usestdlibvars" />
+        <option value="whitespace" />
+        <option value="paralleltest" />
+        <option value="goprintffuncname" />
+        <option value="gosimple" />
+        <option value="gocheckcompilerdirectives" />
+        <option value="gocyclo" />
+      </list>
+    </option>
+    <option name="goLinterExe" value="/usr/bin/golangci-lint" />
+    <option name="linterSelected" value="true" />
+  </component>
+</project>

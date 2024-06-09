@@ -61,6 +61,7 @@ var funcMap = template.FuncMap{
 	},
 }
 
+//goland:noinspection GoUnusedExportedFunction
 func GetRootCmd() *cobra.Command {
 	return rootCmd
 }
@@ -174,7 +175,7 @@ func initConfig() {
 		viper.AddConfigPath(wd)
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("config.yaml")
-		viper.SetDefault("version", sc.Live)
+		viper.SetDefault("version", sc.VersionLIVE)
 
 	}
 

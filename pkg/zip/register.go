@@ -129,6 +129,8 @@ func RegisterDecompressor(method uint16, dcomp Decompressor) {
 
 // RegisterCompressor registers custom compressors for a specified method ID.
 // The common methods [Store] and [Deflate] are built in.
+//
+//goland:noinspection GoUnusedExportedFunction
 func RegisterCompressor(method uint16, comp Compressor) {
 	if _, dup := compressors.LoadOrStore(method, comp); dup {
 		panic("compressor already registered")

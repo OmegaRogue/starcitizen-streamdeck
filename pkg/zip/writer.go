@@ -14,6 +14,8 @@ import (
 	"io/fs"
 	"strings"
 	"unicode/utf8"
+
+	"starcitizen-streamdeck/internal/util"
 )
 
 var (
@@ -42,6 +44,8 @@ type header struct {
 }
 
 // NewWriter returns a new [Writer] writing a zip file to w.
+//
+//goland:noinspection GoUnusedExportedFunction
 func NewWriter(w io.Writer) *Writer {
 	return &Writer{cw: &countWriter{w: bufio.NewWriter(w)}}
 }
@@ -528,7 +532,7 @@ func (w *Writer) AddFS(fsys fs.FS) error {
 		if err != nil {
 			return err
 		}
-		defer f.Close()
+		defer util.DiscardErrorOnly(f.Close())
 		_, err = io.Copy(fw, f)
 		return err
 	})
@@ -568,7 +572,9 @@ func (w *fileWriter) Write(p []byte) (int, error) {
 	if w.raw {
 		return w.zipw.Write(p)
 	}
-	w.crc32.Write(p)
+	if _, err := w.crc32.Write(p); err != nil {
+		return 0, err
+	}
 	return w.rawCount.Write(p)
 }
 

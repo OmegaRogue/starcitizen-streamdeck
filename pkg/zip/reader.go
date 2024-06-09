@@ -8,7 +8,6 @@ import (
 	"bufio"
 	"encoding/binary"
 	"errors"
-	"hash"
 	"io"
 	"io/fs"
 	"os"
@@ -72,6 +71,8 @@ type File struct {
 // A future version of Go may introduce this behavior by default.
 // Programs that want to accept non-local names can ignore
 // the ErrInsecurePath error and use the returned reader.
+//
+//goland:noinspection GoUnusedExportedFunction
 func OpenReader(name string) (*ReadCloser, error) {
 	f, err := os.Open(name)
 	if err != nil {
@@ -79,12 +80,18 @@ func OpenReader(name string) (*ReadCloser, error) {
 	}
 	fi, err := f.Stat()
 	if err != nil {
-		f.Close()
+		err2 := f.Close()
+		if err2 != nil {
+			return nil, errors.Join(err, err2)
+		}
 		return nil, err
 	}
 	r := new(ReadCloser)
-	if err = r.init(f, fi.Size()); err != nil && err != ErrInsecurePath {
-		f.Close()
+	if err = r.init(f, fi.Size()); err != nil && !errors.Is(err, ErrInsecurePath) {
+		err2 := f.Close()
+		if err2 != nil {
+			return nil, errors.Join(err, err2)
+		}
 		return nil, err
 	}
 	r.f = f
@@ -107,7 +114,7 @@ func NewReader(r io.ReaderAt, size int64) (*Reader, error) {
 	}
 	zr := new(Reader)
 	var err error
-	if err = zr.init(r, size); err != nil && err != ErrInsecurePath {
+	if err = zr.init(r, size); err != nil && !errors.Is(err, ErrInsecurePath) {
 		return nil, err
 	}
 	return zr, err
@@ -143,7 +150,7 @@ func (r *Reader) init(rdr io.ReaderAt, size int64) error {
 	for {
 		f := &File{zip: r, zipr: rdr}
 		err = readDirectoryHeader(f, buf)
-		if err == ErrFormat || err == io.ErrUnexpectedEOF {
+		if errors.Is(err, ErrFormat) || errors.Is(err, io.ErrUnexpectedEOF) {
 			break
 		}
 		if err != nil {
@@ -240,7 +247,7 @@ func (f *File) Open() (io.ReadCloser, error) {
 	if dcomp == nil {
 		return nil, ErrAlgorithm
 	}
-	var rc io.ReadCloser = dcomp(r)
+	var rc = dcomp(r)
 	//var desr io.Reader
 	//if f.hasDataDescriptor() {
 	//	desr = io.NewSectionReader(f.zipr, f.headerOffset+bodyOffset+size, dataDescriptorLen)
@@ -277,61 +284,6 @@ func (r *dirReader) Close() error {
 	return nil
 }
 
-type checksumReader struct {
-	rc    io.ReadCloser
-	hash  hash.Hash32
-	nread uint64 // number of bytes read so far
-	f     *File
-	desr  io.Reader // if non-nil, where to read the data descriptor
-	err   error     // sticky error
-}
-
-func (r *checksumReader) Stat() (fs.FileInfo, error) {
-	return headerFileInfo{&r.f.FileHeader}, nil
-}
-
-func (r *checksumReader) Read(b []byte) (n int, err error) {
-	if r.err != nil {
-		return 0, r.err
-	}
-	n, err = r.rc.Read(b)
-	r.hash.Write(b[:n])
-	r.nread += uint64(n)
-	if r.nread > r.f.UncompressedSize64 {
-		return 0, ErrFormat
-	}
-	if err == nil {
-		return
-	}
-	if err == io.EOF {
-		if r.nread != r.f.UncompressedSize64 {
-			return 0, io.ErrUnexpectedEOF
-		}
-		if r.desr != nil {
-			if err1 := readDataDescriptor(r.desr, r.f); err1 != nil {
-				if err1 == io.EOF {
-					err = io.ErrUnexpectedEOF
-				} else {
-					err = err1
-				}
-			} else if r.hash.Sum32() != r.f.CRC32 {
-				err = ErrChecksum
-			}
-		} else {
-			// If there's not a data descriptor, we still compare
-			// the CRC32 of what we've read against the file header
-			// or TOC's CRC32, if it seems like it was set.
-			if r.f.CRC32 != 0 && r.hash.Sum32() != r.f.CRC32 {
-				err = ErrChecksum
-			}
-		}
-	}
-	r.err = err
-	return
-}
-
-func (r *checksumReader) Close() error { return r.rc.Close() }
-
 // findBodyOffset does the minimum work to verify the file has a header
 // and returns the file body offset.
 func (f *File) findBodyOffset() (int64, error) {
@@ -352,6 +304,8 @@ func (f *File) findBodyOffset() (int64, error) {
 // readDirectoryHeader attempts to read a directory header from r.
 // It returns io.ErrUnexpectedEOF if it cannot read a complete header,
 // and ErrFormat if it doesn't find a valid header signature.
+//
+//goland:noinspection GoDeprecation
 func readDirectoryHeader(f *File, r io.Reader) error {
 	var buf [directoryHeaderLen]byte
 	if _, err := io.ReadFull(r, buf[:]); err != nil {
@@ -767,6 +721,7 @@ func (f *fileListEntry) stat() (fileInfoDirEntry, error) {
 }
 
 // Only used for directories.
+
 func (f *fileListEntry) Name() string      { _, elem, _ := split(f.name); return elem }
 func (f *fileListEntry) Size() int64       { return 0 }
 func (f *fileListEntry) Mode() fs.FileMode { return fs.ModeDir | 0555 }

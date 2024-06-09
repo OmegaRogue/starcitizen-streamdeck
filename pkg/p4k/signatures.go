@@ -9,6 +9,7 @@ import (
 
 type Signature [4]byte
 
+//goland:noinspection GoUnusedGlobalVariable
 var (
 	SignatureLocalFileHeader           = Signature{0x50, 0x4B, 0x03, 0x04}
 	SignatureLocalFileHeaderCry        = Signature{0x50, 0x4B, 0x03, 0x14}

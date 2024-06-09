@@ -291,6 +291,7 @@ func (h *FileHeader) SetModTime(t time.Time) {
 	h.ModifiedDate, h.ModifiedTime = timeToMsDosTime(t)
 }
 
+//goland:noinspection GoSnakeCaseUsage
 const (
 	// Unix constants. The specification doesn't mention them,
 	// but these seem to be the values agreed on by tools.

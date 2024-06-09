@@ -4,13 +4,15 @@ package goxdo
 // #cgo LDFLAGS: -lxdo
 import "C"
 
-const CURRENTWINDOW = 0
-
-const MBUTTON_LEFT = 1
-const MBUTTON_MIDDLE = 2
-const MBUTTON_RIGHT = 3
-const MWHEELUP = 4
-const MWHEELDOWN = 5
+//goland:noinspection GoSnakeCaseUsage,GoUnusedConst
+const (
+	CURRENTWINDOW  = 0
+	MBUTTON_LEFT   = 1
+	MBUTTON_MIDDLE = 2
+	MBUTTON_RIGHT  = 3
+	MWHEELUP       = 4
+	MWHEELDOWN     = 5
+)
 
 type Window int
 

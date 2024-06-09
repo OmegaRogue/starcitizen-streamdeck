@@ -4,7 +4,6 @@ go 1.22
 
 require (
 	github.com/OmegaRogue/streamdeck-sdk-go v0.0.0-20240608124720-32d111b1b429
-	github.com/OmegaRogue/weylus-desktop v0.0.0-20230417123117-cd2df2e7d1d5
 	github.com/ahmetb/go-linq/v3 v3.2.0
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/klauspost/compress v1.10.3
@@ -17,7 +16,6 @@ require (
 )
 
 require (
-	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
 	github.com/gorilla/websocket v1.5.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect

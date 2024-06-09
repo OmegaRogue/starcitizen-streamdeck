@@ -20,10 +20,6 @@ func ZstdWrapper(reader io.Reader) io.ReadCloser {
 	return r.IOReadCloser()
 }
 
-const location string = "/mnt/fastbulk/Games/star-citizen/drive_c/Program Files/Roberts Space Industries/StarCitizen/LIVE/Data.p4k"
-
-const prefix string = "/mnt/fastbulk/Games/star-citizen"
-
 func main() {
 
 	runtime.GOMAXPROCS(runtime.NumCPU())

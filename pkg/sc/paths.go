@@ -1,16 +1,17 @@
+//go:generate go-enum -f=$GOFILE --marshal --nocase -t ../../files/zerolog.gotmpl
 package sc
 
 import "path"
 
-const location string = "/mnt/fastbulk/Games/star-citizen/drive_c/Program Files/Roberts Space Industries/StarCitizen/LIVE/Data.p4k"
-
-type Version string
-
-const (
-	EPTU Version = "EPTU"
-	PTU  Version = "PTU"
-	Live Version = "LIVE"
+// Version
+/*
+ENUM(
+EPTU
+PTU
+LIVE
 )
+*/
+type Version string
 
 func ClientPath(prefix string, version Version) string {
 	return path.Join(BasePath(prefix), "StarCitizen", string(version))
