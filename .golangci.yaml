@@ -75,4 +75,4 @@ issues:
   exclude-rules:
     - linters:
         - gocritic
-      text: "sprintfQuotedString: use %q instead of "%s" for quoted strings"
+      text: "sprintfQuotedString: use %q instead of \"%s\" for quoted strings"

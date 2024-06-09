@@ -51,7 +51,7 @@ func (t *Xdo) GetMouseLocation() (x, y, screen int) {
 	cY := C.int(0)
 	cScreen := C.int(0)
 
-	C.xdo_get_mouse_location(t.xdo, &x, &y, &screen)
+	C.xdo_get_mouse_location(t.xdo, &cX, &cY, &cScreen)
 	return int(cX), int(cY), int(cScreen)
 }
 
