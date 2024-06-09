@@ -1,0 +1,13 @@
+{{define "actionlist"}}
+    {{- range $index, $map := .Maps}}
+        {{- if (and (notEmpty $map.Name) (notEmpty $map.UILabel))}}
+            <optgroup label="{{localize $map.UILabel}}">
+                {{- range $index2, $action := $map.Action}}
+                    {{- if (and (notEmpty $action.UILabel) (notEmpty (getBind $action.Name)))}}
+                        <option value="{{$action.Name}}">{{- localize $action.UILabel -}} [<kbd class="key">{{- localizeKey (getBind $action.Name) -}}</kbd>]</option>
+                    {{- end}}
+                {{- end}}
+            </optgroup>
+        {{- end}}
+    {{- end}}
+{{end}}
