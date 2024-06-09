@@ -71,3 +71,8 @@ linters-settings:
       - structtag
       - unmarshal
       - ifaceassert
+issues:
+  exclude-rules:
+    - linters:
+        - gocritic
+      text: "sprintfQuotedString: use %q instead of "%s" for quoted strings"

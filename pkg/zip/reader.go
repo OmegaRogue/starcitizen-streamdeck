@@ -724,7 +724,7 @@ func (f *fileListEntry) stat() (fileInfoDirEntry, error) {
 
 func (f *fileListEntry) Name() string      { _, elem, _ := split(f.name); return elem }
 func (f *fileListEntry) Size() int64       { return 0 }
-func (f *fileListEntry) Mode() fs.FileMode { return fs.ModeDir | 0555 }
+func (f *fileListEntry) Mode() fs.FileMode { return fs.ModeDir | 0o555 }
 func (f *fileListEntry) Type() fs.FileMode { return fs.ModeDir }
 func (f *fileListEntry) IsDir() bool       { return true }
 func (f *fileListEntry) Sys() any          { return nil }
@@ -769,7 +769,7 @@ func (r *Reader) initFileList() {
 		dirs := make(map[string]bool)
 
 		for _, file := range r.File {
-			isDir := len(file.Name) > 0 && file.Name[len(file.Name)-1] == '/'
+			isDir := file.Name != "" && file.Name[len(file.Name)-1] == '/'
 			name := toValidName(file.Name)
 			if name == "" {
 				continue
@@ -856,7 +856,7 @@ func (r *Reader) Open(name string) (fs.File, error) {
 }
 
 func split(name string) (dir, elem string, isDir bool) {
-	if len(name) > 0 && name[len(name)-1] == '/' {
+	if name != "" && name[len(name)-1] == '/' {
 		isDir = true
 		name = name[:len(name)-1]
 	}

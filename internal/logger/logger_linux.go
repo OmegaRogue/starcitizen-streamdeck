@@ -61,7 +61,7 @@ func ESPackMarshalStack(err error) interface{} {
 	if _, err := pretty.Println(e.StackTrace()); err != nil {
 		return nil
 	}
-	//It's mean when env=dev just print track
+	// It's mean when env=dev just print track
 	if true {
 		for _, frame := range e.StackTrace() {
 			fmt.Printf("%+s:%d\r\n", frame, frame)

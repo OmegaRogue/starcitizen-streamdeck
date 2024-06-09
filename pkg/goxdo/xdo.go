@@ -46,13 +46,13 @@ func (t *Xdo) MouseUp(window Window, button int) {
 	C.xdo_mouse_up(t.xdo, C.Window(window), C.int(button))
 }
 
-func (t *Xdo) GetMouseLocation() (int, int, int) {
-	x := C.int(0)
-	y := C.int(0)
-	screen := C.int(0)
+func (t *Xdo) GetMouseLocation() (x, y, screen int) {
+	cX := C.int(0)
+	cY := C.int(0)
+	cScreen := C.int(0)
 
 	C.xdo_get_mouse_location(t.xdo, &x, &y, &screen)
-	return int(x), int(y), int(screen)
+	return int(cX), int(cY), int(cScreen)
 }
 
 func (t *Xdo) GetWindowAtMouse() Window {
@@ -61,14 +61,14 @@ func (t *Xdo) GetWindowAtMouse() Window {
 	return Window(window)
 }
 
-func (t *Xdo) GetMouseLocation2() (int, int, int, Window) {
-	var window C.Window
-	x := C.int(0)
-	y := C.int(0)
-	screen := C.int(0)
+func (t *Xdo) GetMouseLocation2() (x, y, screen int, window Window) {
+	var cWindow C.Window
+	cX := C.int(0)
+	cY := C.int(0)
+	cScreen := C.int(0)
 
-	C.xdo_get_mouse_location2(t.xdo, &x, &y, &screen, &window)
-	return int(x), int(y), int(screen), Window(window)
+	C.xdo_get_mouse_location2(t.xdo, &cX, &cY, &cScreen, &cWindow)
+	return int(cX), int(cY), int(cScreen), Window(cWindow)
 }
 
 func (t *Xdo) WaitForMouseMoveFrom(x, y int) {

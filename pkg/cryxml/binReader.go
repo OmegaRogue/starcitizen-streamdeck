@@ -10,7 +10,7 @@ type BinReader struct {
 }
 
 func (b *BinReader) Read(_ []byte) (n int, err error) {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 

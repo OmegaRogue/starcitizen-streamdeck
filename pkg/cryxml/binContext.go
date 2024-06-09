@@ -22,5 +22,3 @@ func NewBinContext() *BinContext {
 	c.StringData = []byte{}
 	return c
 }
-
-//TODO public string _string(uint sOffset) => Conversions.ToString(StringData.SliceE(sOffset, StringDataLength));

@@ -38,7 +38,7 @@ func (n *BinNode) HaveAttr(key string) bool {
 func (n *BinNode) GetNumAttributes() int {
 	return int(n.node().AttributeCount)
 }
-func (n *BinNode) GetAttributeByIndex(index int) (key string, value string, ok bool) {
+func (n *BinNode) GetAttributeByIndex(index int) (key, value string, ok bool) {
 	pNode := n.node()
 	if index < 0 || index >= int(pNode.AttributeCount) {
 		return "", "", false
