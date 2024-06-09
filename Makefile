@@ -19,3 +19,5 @@ generate: prepare
 	go generate -v ./...
 build: generate
 	go build -o out/ starcitizen-streamdeck
+lint:
+	golangci-lint run

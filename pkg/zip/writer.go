@@ -15,7 +15,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/pkg/errors"
-	"starcitizen-streamdeck/internal/util"
 )
 
 var (
@@ -532,7 +531,7 @@ func (w *Writer) AddFS(fsys fs.FS) error {
 		if err != nil {
 			return err
 		}
-		defer util.DiscardErrorOnly(f.Close())
+		defer f.Close()
 		_, err = io.Copy(fw, f)
 		return err
 	})

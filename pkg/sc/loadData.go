@@ -9,26 +9,31 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/samber/lo"
-	"starcitizen-streamdeck/internal/util"
 	cryxml2 "starcitizen-streamdeck/pkg/cryxml"
 	"starcitizen-streamdeck/pkg/p4k"
 )
 
 func LoadData(prefix string, version Version) Data {
-	defaultProfile, _ := os.OpenFile("defaultProfile.xml", os.O_RDWR|os.O_CREATE, 0o666)
-	defer util.DiscardErrorOnly(defaultProfile.Sync())
-	defer util.DiscardErrorOnly(defaultProfile.Close())
-
-	global, _ := os.OpenFile("global.json", os.O_RDWR|os.O_CREATE, 0o666)
-	defer util.DiscardErrorOnly(global.Sync())
-	defer util.DiscardErrorOnly(global.Close())
+	defaultExists := false
+	globalExists := false
 
 	p4kPath := P4K(prefix, version)
-
 	p4kFi, _ := os.Stat(p4kPath)
+
+	defaultProfile, err := os.OpenFile("defaultProfile.xml", os.O_RDWR|os.O_CREATE, 0o666)
+	if err == nil {
+		fi, _ := defaultProfile.Stat()
+		defaultExists = fi.Size() <= 10 || p4kFi.ModTime().Before(fi.ModTime())
+	}
+	global, err := os.OpenFile("global.json", os.O_RDWR|os.O_CREATE, 0o666)
+	if err == nil {
+		fi, _ := global.Stat()
+		globalExists = fi.Size() <= 10 || p4kFi.ModTime().Before(fi.ModTime())
+	}
+
 	pd := p4k.NewDirectory()
 	var cryXMLData string
-	if fi, _ := defaultProfile.Stat(); fi.Size() <= 10 || p4kFi.ModTime().Before(fi.ModTime()) {
+	if defaultExists {
 		file, err := pd.ScanDirectoryFor(p4kPath, "defaultProfile.xml")
 		if err != nil {
 			log.Fatal().Err(err).Msg("error scanning p4k")
@@ -55,7 +60,7 @@ func LoadData(prefix string, version Version) Data {
 	}
 
 	locals := map[string]map[string]string{}
-	if fi, _ := global.Stat(); fi.Size() <= 10 || p4kFi.ModTime().Before(fi.ModTime()) {
+	if globalExists {
 		localFiles, err := pd.ScanDirectoryContaining(p4kPath, "english\\global.ini")
 		if err != nil {
 			log.Fatal().Err(err).Msg("error scanning p4k")
@@ -85,6 +90,23 @@ func LoadData(prefix string, version Version) Data {
 
 	profile, _ := FromXml(cryXMLData)
 
+	if defaultProfile != nil {
+
+		if err := defaultProfile.Sync(); err != nil {
+			log.Fatal().Err(err).Msg("error syncing defaultProfile")
+		}
+		if err := defaultProfile.Close(); err != nil {
+			log.Fatal().Err(err).Msg("error closing defaultProfile")
+		}
+	}
+	if global != nil {
+		if err := global.Sync(); err != nil {
+			log.Fatal().Err(err).Msg("error syncing global")
+		}
+		if err := global.Close(); err != nil {
+			log.Fatal().Err(err).Msg("error closing global")
+		}
+	}
 	return Data{
 		profile, LoadActionmap(prefix, version),
 		locals,
