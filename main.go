@@ -21,7 +21,6 @@ func ZstdWrapper(reader io.Reader) io.ReadCloser {
 }
 
 func main() {
-
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	zerolog.SetGlobalLevel(zerolog.TraceLevel)
 	logger.SetupLogger()

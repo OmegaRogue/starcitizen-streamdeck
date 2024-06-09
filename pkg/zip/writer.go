@@ -7,7 +7,6 @@ package zip
 import (
 	"bufio"
 	"encoding/binary"
-	"errors"
 	"hash"
 	"hash/crc32"
 	"io"
@@ -15,6 +14,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/pkg/errors"
 	"starcitizen-streamdeck/internal/util"
 )
 
@@ -513,7 +513,7 @@ func (w *Writer) AddFS(fsys fs.FS) error {
 		}
 		info, err := d.Info()
 		if err != nil {
-			return err
+			return errors.Wrap(err, "")
 		}
 		if !info.Mode().IsRegular() {
 			return errors.New("zip: cannot add non-regular file")

@@ -267,7 +267,7 @@ func msDosTimeToTime(dosDate, dosTime uint16) time.Time {
 // timeToMsDosTime converts a time.Time to an MS-DOS date and time.
 // The resolution is 2s.
 // See: https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-filetimetodosdatetime
-func timeToMsDosTime(t time.Time) (fDate uint16, fTime uint16) {
+func timeToMsDosTime(t time.Time) (fDate, fTime uint16) {
 	fDate = uint16(t.Day() + int(t.Month())<<5 + (t.Year()-1980)<<9)
 	fTime = uint16(t.Second()/2 + t.Minute()<<5 + t.Hour()<<11)
 	return
@@ -319,7 +319,7 @@ func (h *FileHeader) Mode() (mode fs.FileMode) {
 	case creatorNTFS, creatorVFAT, creatorFAT:
 		mode = msdosModeToFileMode(h.ExternalAttrs)
 	}
-	if len(h.Name) > 0 && h.Name[len(h.Name)-1] == '/' {
+	if h.Name != "" && h.Name[len(h.Name)-1] == '/' {
 		mode |= fs.ModeDir
 	}
 	return mode
@@ -334,7 +334,7 @@ func (h *FileHeader) SetMode(mode fs.FileMode) {
 	if mode&fs.ModeDir != 0 {
 		h.ExternalAttrs |= msdosDir
 	}
-	if mode&0200 == 0 {
+	if mode&0o200 == 0 {
 		h.ExternalAttrs |= msdosReadOnly
 	}
 }
@@ -350,12 +350,12 @@ func (h *FileHeader) hasDataDescriptor() bool {
 
 func msdosModeToFileMode(m uint32) (mode fs.FileMode) {
 	if m&msdosDir != 0 {
-		mode = fs.ModeDir | 0777
+		mode = fs.ModeDir | 0o777
 	} else {
-		mode = 0666
+		mode = 0o666
 	}
 	if m&msdosReadOnly != 0 {
-		mode &^= 0222
+		mode &^= 0o222
 	}
 	return mode
 }
@@ -387,11 +387,11 @@ func fileModeToUnixMode(mode fs.FileMode) uint32 {
 	if mode&fs.ModeSticky != 0 {
 		m |= s_ISVTX
 	}
-	return m | uint32(mode&0777)
+	return m | uint32(mode&0o777)
 }
 
 func unixModeToFileMode(m uint32) fs.FileMode {
-	mode := fs.FileMode(m & 0777)
+	mode := fs.FileMode(m & 0o777)
 	switch m & s_IFMT {
 	case s_IFBLK:
 		mode |= fs.ModeDevice

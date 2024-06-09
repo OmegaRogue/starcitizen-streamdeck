@@ -63,6 +63,9 @@ func (d *Directory) getRecords(reader *recReader) (err error) {
 		return errors.Wrap(err, "Go to Last Page")
 	}
 	d.endOfCentralDirRecord, err = NewEndOfCentralDirRecord(reader)
+	if err != nil {
+		return errors.Wrap(err, "New EndOfCentralDirRecord")
+	}
 	if _, err := reader.Seek(d.endOfCentralDirRecord.RecordOffset-PageSize, io.SeekStart); err != nil {
 		return errors.Wrap(err, "Seek to Locator")
 	}
@@ -105,7 +108,6 @@ func (d *Directory) ScanDirectoryFor(p4kFilename, filename string) (*File, error
 		log.Trace().Str("filename", de.Filename).Msg("File found")
 		p := NewFile(de)
 		return p, nil
-
 	}
 	return nil, errors.New("File not found")
 }

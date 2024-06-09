@@ -54,10 +54,10 @@ type ActionProfiles struct {
 	Actionmap      []actionMap     `xml:"actionmap"`
 }
 type ActionMapActionMaps struct {
-	ActionProfiles  ActionProfiles `xml:"ActionProfiles"`
-	ActionMaps      map[string]map[string]*MappedAction
-	DeviceOptionMap map[string]*[]DeviceOption
-	Actions         map[string]*MappedAction
+	ActionProfiles  ActionProfiles                      `xml:"ActionProfiles"`
+	ActionMaps      map[string]map[string]*MappedAction `xml:"-"`
+	DeviceOptionMap map[string]*[]DeviceOption          `xml:"-"`
+	Actions         map[string]*MappedAction            `xml:"-"`
 }
 
 func (a *ActionMapActionMaps) Prepare() {
@@ -74,11 +74,12 @@ func (a *ActionMapActionMaps) Prepare() {
 				Joystick: []Rebind{},
 			}
 			for _, rebind := range acti.Rebind {
-				if strings.HasPrefix(rebind.Input, "kb") {
+				switch {
+				case strings.HasPrefix(rebind.Input, "kb"):
 					reAct.Keyboard = append(reAct.Keyboard, rebind)
-				} else if strings.HasPrefix(rebind.Input, "js") {
+				case strings.HasPrefix(rebind.Input, "js"):
 					reAct.Joystick = append(reAct.Joystick, rebind)
-				} else if strings.HasPrefix(rebind.Input, "mo") {
+				case strings.HasPrefix(rebind.Input, "mo"):
 					reAct.Mouse = append(reAct.Mouse, rebind)
 				}
 			}

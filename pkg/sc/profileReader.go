@@ -11,7 +11,7 @@ type ActionCategory struct {
 type profileReaderTemp struct {
 	ActivationModes  []ActivationMode `xml:"ActivationModes>ActivationMode"`
 	ActionCategories []ActionCategory `xml:"ActionCategories>Category"`
-	ActionMaps       []actionMapRaw   `xml:"actionmap"`
+	ActionMaps       []*actionMapRaw  `xml:"actionmap"`
 }
 
 type gamepadRaw struct {
@@ -75,10 +75,10 @@ type state struct {
 }
 
 type actionMapRaw struct {
-	Name          string      `xml:"name,attr"`
-	UILabel       string      `xml:"UILabel,attr"`
-	UICategory    string      `xml:"UICategory,attr"`
-	UILable       string      `xml:"UILable,attr"`
-	UIDescription string      `xml:"UIDescription,attr"`
-	Action        []actionRaw `xml:"action"`
+	Name          string       `xml:"name,attr"`
+	UILabel       string       `xml:"UILabel,attr"`
+	UICategory    string       `xml:"UICategory,attr"`
+	UILable       string       `xml:"UILable,attr"`
+	UIDescription string       `xml:"UIDescription,attr"`
+	Action        []*actionRaw `xml:"action"`
 }

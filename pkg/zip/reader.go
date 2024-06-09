@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-//var zipinsecurepath = godebug.New("zipinsecurepath")
+// var zipinsecurepath = godebug.New("zipinsecurepath")
 
 var (
 	ErrFormat       = errors.New("zip: not a valid zip file")
@@ -174,7 +174,6 @@ func (r *Reader) init(rdr io.ReaderAt, size int64) error {
 			// The zip specification states that names must use forward slashes,
 			// so consider any backslashes in the name insecure.
 			if !filepath.IsLocal(f.Name) || strings.Contains(f.Name, `\`) {
-				//zipinsecurepath.IncNonDefault()
 				return ErrInsecurePath
 			}
 		}
@@ -248,16 +247,6 @@ func (f *File) Open() (io.ReadCloser, error) {
 		return nil, ErrAlgorithm
 	}
 	var rc = dcomp(r)
-	//var desr io.Reader
-	//if f.hasDataDescriptor() {
-	//	desr = io.NewSectionReader(f.zipr, f.headerOffset+bodyOffset+size, dataDescriptorLen)
-	//}
-	//rc = &checksumReader{
-	//	rc:   rc,
-	//	hash: crc32.NewIEEE(),
-	//	f:    f,
-	//	desr: desr,
-	//}
 	return rc, nil
 }
 

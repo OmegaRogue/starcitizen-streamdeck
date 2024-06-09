@@ -51,7 +51,7 @@ func NewFileHeader(reader *recReader) (*FileHeader, error) {
 	if !reader.IsOpen() {
 		return nil, errors.New("Reader not open")
 	}
-	cPos := int64(0)
+	var cPos int64
 	length, err := reader.Length()
 	if err != nil {
 		return nil, errors.New("Get length failed")
@@ -99,15 +99,12 @@ func NewFileHeader(reader *recReader) (*FileHeader, error) {
 			if _, err := reader.Seek(fh.FileSizeComp, io.SeekCurrent); err != nil {
 				return nil, errors.New("Seek failed")
 			}
-
 		} else {
 			fh.RecordOffset = -1
 			fh.FileOffset = -1
 			fh.FileSizeComp = 0
 			fh.FileSizeUncomp = 0
-
 		}
-
 		length, err = reader.Length()
 		if err != nil {
 			return nil, errors.New("Get length failed")

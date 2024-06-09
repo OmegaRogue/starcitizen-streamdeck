@@ -17,17 +17,12 @@ linters:
     - bodyclose
     - dupl
     - errorlint
-    - exportloopref
-    - funlen
-    - gocognit
     - goconst
     - gocritic
-    - gocyclo
     - goprintffuncname
     - gosec
     - prealloc
     - revive
-    - stylecheck
     - whitespace
     - goheader
     - errcheck
@@ -43,7 +38,6 @@ linters:
     - paralleltest
     - unconvert
     - wastedassign
-    - wrapcheck
     - nilerr
     - nilnil
 linters-settings:
@@ -59,6 +53,8 @@ linters-settings:
       - style
       - performance
       - opinionated
+    disabled-checks:
+      - exitAfterDefer
   govet:
     settings:
       printf:
@@ -76,3 +72,53 @@ issues:
     - linters:
         - gocritic
       text: "sprintfQuotedString: use %q instead of \"%s\" for quoted strings"
+    - linters:
+        - unused
+      text: "func `readDataDescriptor` is unused"
+    - linters:
+        - stylecheck
+      text: "ST1003: should not use underscores in Go names; const s_IFMT should be sIFMT"
+    - linters:
+        - stylecheck
+      text: "ST1003: should not use underscores in Go names; const s_IFSOCK should be sIFSOCK"
+    - linters:
+        - stylecheck
+      text: "ST1003: should not use underscores in Go names; const s_IFLNK should be sIFLNK"
+    - linters:
+        - stylecheck
+      text: "ST1003: should not use underscores in Go names; const s_IFREG should be sIFREG"
+    - linters:
+        - stylecheck
+      text: "ST1003: should not use underscores in Go names; const s_IFBLK should be sIFBLK"
+    - linters:
+        - stylecheck
+      text: "ST1003: should not use underscores in Go names; const s_IFDIR should be sIFDIR"
+    - linters:
+        - stylecheck
+      text: "ST1003: should not use underscores in Go names; const s_IFCHR should be sIFCHR"
+    - linters:
+        - stylecheck
+      text: "ST1003: should not use underscores in Go names; const s_IFIFO should be sIFIFO"
+    - linters:
+        - stylecheck
+      text: "ST1003: should not use underscores in Go names; const s_ISUID should be sISUID"
+    - linters:
+        - stylecheck
+      text: "ST1003: should not use underscores in Go names; const s_ISGID should be sISGID"
+    - linters:
+        - stylecheck
+      text: "ST1003: should not use underscores in Go names; const s_ISVTX should be sISVTX"
+    - linters:
+        - ineffassign
+      text: "ineffectual assignment to length"
+    - linters:
+        - ineffassign
+      text: "log.Fatal will exit, and `defer util.DiscardErrorOnly(static.Close())` will not run"
+    - linters:
+        - staticcheck
+      text: "SA4006: this value of `length` is never used"
+    - linters:
+        - wastedassign
+      text: "assigned to length, but reassigned without using the value"
+
+

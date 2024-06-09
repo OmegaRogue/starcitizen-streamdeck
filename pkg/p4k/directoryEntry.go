@@ -107,6 +107,9 @@ func NewDirectoryEntry(reader *recReader) (*DirectoryEntry, error) {
 		return nil, errors.Wrap(err, "Seek to Central Dir Record")
 	}
 	de.item, err = ByteToType[MyDirectoryEntryRecord](reader)
+	if err != nil {
+		return nil, errors.Wrap(err, "Bytes to MyDirectoryEntryRecord")
+	}
 	de.IsValid = true
 	if de.item.FilenameLength > 0 {
 		err := de.ReadFilename(reader)

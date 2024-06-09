@@ -1,8 +1,6 @@
 package cryxml
 
 import (
-	"io"
-
 	"github.com/pkg/errors"
 )
 
@@ -78,10 +76,4 @@ func (b *BinReader) Create(fileContents []byte) (*BinContext, error) {
 		pData.BinaryNodes[i].NodeIndex = i // self ref..
 	}
 	return pData, nil
-}
-
-func init() {
-	var assertion io.Reader
-	assertion = &BinReader{}
-	_ = assertion
 }

@@ -31,7 +31,6 @@ import (
 )
 
 func SetupLogger() {
-
 	consoleWriter := zerolog.ConsoleWriter{
 		Out: os.Stdout,
 		PartsOrder: []string{
@@ -45,7 +44,6 @@ func SetupLogger() {
 	stdLogger := log.With().Str("component", "stdlog").Logger()
 	stdlog.SetOutput(stdLogger)
 
-	//zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 	zerolog.ErrorStackMarshaler = ESPackMarshalStack
 }
 

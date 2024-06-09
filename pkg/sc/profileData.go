@@ -64,16 +64,16 @@ type Action struct {
 	Mouse            []string
 }
 
-func (a Action) HasKeyboard() bool {
+func (a *Action) HasKeyboard() bool {
 	return strings.TrimSpace(a.AttrKeyboard) != "" || strings.TrimSpace(a.Keyboard.Input) != "" || len(a.Keyboard.Inputdata) > 0
 }
-func (a Action) HasGamepad() bool {
+func (a *Action) HasGamepad() bool {
 	return strings.TrimSpace(a.AttrGamepad) != "" || strings.TrimSpace(a.Gamepad.Input) != "" || len(a.Gamepad.Inputdata) > 0
 }
-func (a Action) HasJoystick() bool {
+func (a *Action) HasJoystick() bool {
 	return strings.TrimSpace(a.AttrJoystick) != "" || strings.TrimSpace(a.Joystick.Input) != ""
 }
-func (a Action) HasMouse() bool {
+func (a *Action) HasMouse() bool {
 	return strings.TrimSpace(a.AttrMouse) != "" || len(a.Mouse) > 0
 }
 
@@ -191,7 +191,6 @@ func NewProfile(r profileReaderTemp) *Profile {
 			m.Action[action2.Name] = &act
 			p.Actions[action2.Name] = &act
 			p.Maps[actionMap.Name] = m
-
 		}
 	}
 	return p
@@ -207,13 +206,11 @@ func (c Data) LookupBind(name string) string {
 	action := c.Profile.Actions[name]
 	reActions := c.Rebinds.Actions[name]
 	var possibilities []string
-	possibilities = append(possibilities, action.AttrKeyboard)
-	possibilities = append(possibilities, action.Keyboard.Input)
+	possibilities = append(possibilities, action.AttrKeyboard, action.Keyboard.Input)
 	possibilities = append(possibilities, action.Keyboard.Inputdata...)
 	if reActions != nil {
 		for _, rebind := range reActions.Keyboard {
-			possibilities = append(possibilities, strings.TrimPrefix(rebind.DefaultInput, "kb1_"))
-			possibilities = append(possibilities, strings.TrimPrefix(rebind.Input, "kb1_"))
+			possibilities = append(possibilities, strings.TrimPrefix(rebind.DefaultInput, "kb1_"), strings.TrimPrefix(rebind.Input, "kb1_"))
 		}
 	}
 

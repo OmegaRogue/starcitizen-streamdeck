@@ -2,26 +2,25 @@ package p4k
 
 import (
 	"encoding/binary"
-	"io"
 	"reflect"
 	"time"
 
 	"github.com/rs/zerolog/log"
 )
 
+const PageSize int64 = 0x1000
+
 const (
-	PageSize                           int64 = 0x1000
-	DirectoryEntryRecordLength               = 46
-	Z64DirectoryEntryExtraRecordLength       = 32
-	EndOfCentralDirRecordLength              = 22
-	Z64EndOfCentralDirLocatorLength          = 20
-	Z64EndOfCentralDirRecordLength           = 56
-	FileHeaderRecordLength                   = 30
-	Z64FileHeaderExtraRecordLength           = 32
+	DirectoryEntryRecordLength         = 46
+	Z64DirectoryEntryExtraRecordLength = 32
+	EndOfCentralDirRecordLength        = 22
+	Z64EndOfCentralDirLocatorLength    = 20
+	Z64EndOfCentralDirRecordLength     = 56
+	FileHeaderRecordLength             = 30
+	Z64FileHeaderExtraRecordLength     = 32
 )
 
 func init() {
-
 	if binary.Size(MyZ64EndOfCentralDirRecord{}) != Z64EndOfCentralDirRecordLength {
 		log.Panic().Str("name", reflect.TypeOf(MyZ64EndOfCentralDirRecord{}).Name()).Uint64("recordSize", uint64(binary.Size(MyZ64EndOfCentralDirRecord{}))).Msg("Record size does not match!")
 	}
@@ -43,14 +42,6 @@ func init() {
 	if binary.Size(MyZ64FileHeaderExtraRecord{}) != Z64FileHeaderExtraRecordLength {
 		log.Panic().Str("name", reflect.TypeOf(MyZ64FileHeaderExtraRecord{}).Name()).Uint64("recordSize", uint64(binary.Size(MyZ64FileHeaderExtraRecord{}))).Msg("Record size does not match!")
 	}
-
-	var assertion io.ReadSeekCloser
-	assertion = &recReader{}
-	_ = assertion
-
-	var assertion2 io.Closer
-	assertion2 = &FileHeader{}
-	_ = assertion2
 }
 
 func TimestampFromDos(date, t uint16) time.Time {

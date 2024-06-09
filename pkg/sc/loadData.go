@@ -3,7 +3,6 @@ package sc
 import (
 	"encoding/json"
 	"encoding/xml"
-	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -16,11 +15,11 @@ import (
 )
 
 func LoadData(prefix string, version Version) Data {
-	defaultProfile, _ := os.OpenFile("defaultProfile.xml", os.O_RDWR|os.O_CREATE, 0666)
+	defaultProfile, _ := os.OpenFile("defaultProfile.xml", os.O_RDWR|os.O_CREATE, 0o666)
 	defer util.DiscardErrorOnly(defaultProfile.Sync())
 	defer util.DiscardErrorOnly(defaultProfile.Close())
 
-	global, _ := os.OpenFile("global.json", os.O_RDWR|os.O_CREATE, 0666)
+	global, _ := os.OpenFile("global.json", os.O_RDWR|os.O_CREATE, 0o666)
 	defer util.DiscardErrorOnly(global.Sync())
 	defer util.DiscardErrorOnly(global.Close())
 
@@ -44,10 +43,10 @@ func LoadData(prefix string, version Version) Data {
 			log.Fatal().Err(err).Msg("error parsing cryxml")
 		}
 		tree := new(cryxml2.Tree)
-		tree.BuildXml(root)
-		cryXMLData = fmt.Sprint(tree)
+		tree.BuildXML(root)
+		cryXMLData = tree.String()
 
-		if _, err := io.WriteString(defaultProfile, cryXMLData); err != nil {
+		if _, err := defaultProfile.WriteString(cryXMLData); err != nil {
 			log.Fatal().Err(err).Msg("error writing defaultProfile")
 		}
 	} else {
@@ -84,8 +83,6 @@ func LoadData(prefix string, version Version) Data {
 		}
 	}
 
-	//log.Info().Err(err).Str("filename", file.Filename).Msg("\n" + retVal)
-
 	profile, _ := FromXml(cryXMLData)
 
 	return Data{
@@ -96,7 +93,6 @@ func LoadData(prefix string, version Version) Data {
 
 func LoadActionmap(prefix string, version Version) *ActionMapActionMaps {
 	data, _ := os.ReadFile(ActionMaps(prefix, version))
-	//fmt.Println(string(data))
 
 	var out ActionMapActionMaps
 	if err := xml.Unmarshal(data, &out); err != nil {

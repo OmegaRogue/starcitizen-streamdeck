@@ -72,7 +72,6 @@ func NewRootCmd() *cobra.Command {
 		Short: "starcitizen-streamdeck",
 		Long:  `starcitizen-streamdeck`,
 		Run: func(cmd *cobra.Command, args []string) {
-
 			data = sc.LoadData(viper.GetString("prefix"), sc.Version(viper.GetString("version")))
 
 			watcher, err := fsnotify.NewWatcher()
@@ -169,18 +168,14 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-
 		wd, err := os.Getwd()
 		cobra.CheckErr(err)
 		viper.AddConfigPath(wd)
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("config.yaml")
 		viper.SetDefault("version", sc.VersionLIVE)
-
 	}
-
 	viper.AutomaticEnv() // read in environment variables that match
-
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		_, err := fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
@@ -190,7 +185,7 @@ func initConfig() {
 	}
 }
 
-func registerAction(id string, callback sdk.ActionHandler[sdk.KeyPayload], callbackUp sdk.ActionHandler[sdk.KeyPayload]) {
+func registerAction(id string, callback, callbackUp sdk.ActionHandler[sdk.KeyPayload]) {
 	sdk.RegisterActionDown("codes.omegavoid.starcitizen."+id, func(action, context string, payload sdk.KeyPayload, deviceId string) {
 		callback(action, context, payload, deviceId)
 		log.Info().Str("action", action).Str("direction", "down").Str("context", context).Int("state", payload.State).Bool("isInMultiAction", payload.IsInMultiAction).RawJSON("settings", []byte(payload.Settings.String())).Str("deviceId", deviceId).Msg("codes.omegavoid.starcitizen." + id)
@@ -209,22 +204,22 @@ func RegenerateTemplates() {
 
 	templ.DefinedTemplates()
 	templ.Templates()
-	static, _ := os.OpenFile("PropertyInspector/StarCitizen/Static.html", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
+	static, _ := os.OpenFile("PropertyInspector/StarCitizen/Static.html", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0o644)
 	if err := templ.ExecuteTemplate(static, "static.gohtml", data.Profile); err != nil {
 		log.Fatal().Err(err).Msg("static template failed to execute")
 	}
 	defer util.DiscardErrorOnly(static.Sync())
 	defer util.DiscardErrorOnly(static.Close())
-	macro, _ := os.OpenFile("PropertyInspector/StarCitizen/Macro.html", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
+	macro, _ := os.OpenFile("PropertyInspector/StarCitizen/Macro.html", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0o644)
 	if err := templ.ExecuteTemplate(macro, "macro.gohtml", data.Profile); err != nil {
 		log.Fatal().Err(err).Msg("macro template failed to execute")
 	}
 	defer util.DiscardErrorOnly(macro.Sync())
 	defer util.DiscardErrorOnly(macro.Close())
-	dial, _ := os.OpenFile("PropertyInspector/StarCitizen/Dial.html", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
+	dial, _ := os.OpenFile("PropertyInspector/StarCitizen/Dial.html", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0o644)
 	if err := templ.ExecuteTemplate(dial, "dial.gohtml", data.Profile); err != nil {
 		log.Fatal().Err(err).Msg("dial template failed to execute")
 	}
-	defer util.DiscardErrorOnly(dial.Sync())
-	defer util.DiscardErrorOnly(dial.Close())
+	util.DiscardErrorOnly(dial.Sync())
+	util.DiscardErrorOnly(dial.Close())
 }
