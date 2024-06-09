@@ -24,6 +24,7 @@ jobs:
           go-version: ^1.20.2
           cache: false
       - run: go install github.com/abice/go-enum@latest
+      - run: sudo apt install libxdo-dev
       - name: Generate
         run: go generate -v ./...
       - run: sudo chmod -R +w ../../../go/
